@@ -6,7 +6,7 @@ export interface ChildrenWidthMeterProps {
    * The widths of the children.
    * @type SharedValue<number[]>
    */
-  childrenWidths: SharedValue<number[]>;
+  animatedChildrenWidths: SharedValue<number[]>;
   /**
    * The children to measure.
    * @type ReactNode[]

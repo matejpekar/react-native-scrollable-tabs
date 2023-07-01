@@ -5,6 +5,12 @@ This is a package for implementing scrollable tabs such as AirBnb filter tabs
 ## Installation
 
 ```sh
+yarn add react-native-scrollable-tabs
+```
+
+or
+
+```sh
 npm install react-native-scrollable-tabs
 ```
 

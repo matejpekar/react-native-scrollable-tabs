@@ -1,5 +1,6 @@
 import Animated, {
   interpolate,
+  runOnJS,
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedRef,
@@ -18,6 +19,7 @@ import { useSnapPoints, useCenterPoints } from '../../hooks';
 import { ScrollableTabsProvider } from '../../context/external';
 import { ScrollableTabsProps } from './types';
 import ChildrenWidthMeter from '../ChildrenWidthMeter';
+import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
   (
@@ -27,9 +29,14 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
       showsHorizontalScrollIndicator = false,
       decelerationRate = 'fast',
       onContentSizeChange,
+      onMomentumScrollEnd,
       contentContainerStyle,
 
       animatedIndex: animatedIndexProp,
+      animatedFocusIndex: animatedFocusIndexProp,
+
+      onChange: onChangeProp,
+      onFocusChange: onFocusChangeProp,
 
       scrollIndicator,
       children,
@@ -59,28 +66,61 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
         0,
     };
 
-    const childrenWidths = useSharedValue<number[]>([]);
+    const animatedChildrenWidths = useSharedValue<number[]>([]);
     const animatedIndex = useSharedValue(0);
     const animatedFocusedIndex = useSharedValue(0);
     const animatedScrollX = useSharedValue(0);
     const contentWidth = useSharedValue(0);
-    const haptics = useSharedValue(false);
 
-    const snapPoints = useSnapPoints(childrenWidths, contentWidth, width);
-    const centerPoints = useCenterPoints(
-      childrenWidths,
+    const snapPoints = useSnapPoints(
+      animatedChildrenWidths,
+      contentWidth,
+      width
+    );
+    const animatedMiddlePoints = useCenterPoints(
+      animatedChildrenWidths,
       snapPoints,
       width,
       insets
     );
 
-    const onScroll = useAnimatedScrollHandler({
-      onScroll: ({ contentOffset }) => {
-        animatedScrollX.value = contentOffset.x;
-        animatedIndex.value = Math.round(
-          interpolate(contentOffset.x, snapPoints.value, indexes, 'clamp')
-        );
-      },
+    useAnimatedReaction(
+      () => animatedIndex.value,
+      (index) => {
+        if (animatedIndexProp) {
+          animatedIndexProp.value = index;
+        }
+      }
+    );
+    useAnimatedReaction(
+      () => Math.round(animatedIndex.value),
+      (index, prev) => {
+        if (index !== prev && onChangeProp) {
+          runOnJS(onChangeProp)(index);
+        }
+      }
+    );
+
+    useAnimatedReaction(
+      () => animatedFocusedIndex.value,
+      (index, prev) => {
+        if (animatedFocusIndexProp) {
+          animatedFocusIndexProp.value = index;
+        }
+        if (index !== prev && onFocusChangeProp) {
+          onFocusChangeProp(index);
+        }
+      }
+    );
+
+    const onScroll = useAnimatedScrollHandler((event) => {
+      animatedScrollX.value = event.contentOffset.x;
+      animatedIndex.value = interpolate(
+        event.contentOffset.x,
+        snapPoints.value,
+        indexes,
+        'clamp'
+      );
     });
 
     const animatedCenterOffset = useDerivedValue(
@@ -88,29 +128,18 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
         interpolate(
           animatedScrollX.value,
           snapPoints.value,
-          centerPoints.value,
+          animatedMiddlePoints.value,
           'clamp'
         ),
       []
     );
-
     const animatedWidth = useDerivedValue(
-      () => childrenWidths.value[animatedIndex.value] ?? 0,
+      () => animatedChildrenWidths.value[Math.round(animatedIndex.value)] ?? 0,
       []
     );
-
     const animatedFocusedWidth = useDerivedValue(
-      () => childrenWidths.value[animatedFocusedIndex.value] ?? 0,
+      () => animatedChildrenWidths.value[animatedFocusedIndex.value] ?? 0,
       []
-    );
-
-    useAnimatedReaction(
-      () => animatedIndex.value,
-      (_animatedIndex) => {
-        if (animatedIndexProp) {
-          animatedIndexProp.value = _animatedIndex;
-        }
-      }
     );
 
     const handleSnapToIndex = useCallback(
@@ -130,6 +159,8 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
         animatedFocusedWidth,
         animatedScrollX,
         animatedCenterOffset,
+        animatedChildrenWidths,
+        animatedMiddlePoints,
         snapToIndex: handleSnapToIndex,
       }),
       [
@@ -139,6 +170,8 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
         animatedFocusedWidth,
         animatedScrollX,
         animatedCenterOffset,
+        animatedChildrenWidths,
+        animatedMiddlePoints,
         handleSnapToIndex,
       ]
     );
@@ -166,17 +199,17 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
             onContentSizeChange?.(w, h);
           }}
           snapToAlignment="start"
-          decelerationRate={decelerationRate}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           contentContainerStyle={contentContainerStyle}
-          onScrollBeginDrag={() => (haptics.value = true)}
-          onMomentumScrollEnd={() => {
-            animatedFocusedIndex.value = animatedIndex.value;
-            haptics.value = false;
+          decelerationRate={decelerationRate}
+          onMomentumScrollEnd={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+            animatedFocusedIndex.value = Math.round(animatedIndex.value);
+            onMomentumScrollEnd?.(e);
           }}
+          disableIntervalMomentum={true}
           {...props}
         >
-          <ChildrenWidthMeter childrenWidths={childrenWidths}>
+          <ChildrenWidthMeter animatedChildrenWidths={animatedChildrenWidths}>
             {children}
           </ChildrenWidthMeter>
         </Animated.ScrollView>

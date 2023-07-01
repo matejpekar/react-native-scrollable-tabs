@@ -3,20 +3,20 @@ import { View } from 'react-native';
 import { ChildrenWidthMeterProps } from './types';
 
 export default ({
-  childrenWidths: childrenWidthsProp,
+  animatedChildrenWidths: animatedChildrenWidthsProp,
   children,
 }: ChildrenWidthMeterProps) => {
-  const [childrenWidths, setChildrenWidths] = useState<
+  const [animatedChildrenWidths, setAnimatedChildrenWidths] = useState<
     { index: number; width: number }[]
   >([]);
 
   useEffect(() => {
-    if (childrenWidths.length === children.length) {
-      childrenWidthsProp.value = childrenWidths
+    if (animatedChildrenWidths.length === children.length) {
+      animatedChildrenWidthsProp.value = animatedChildrenWidths
         .sort((a, b) => a.index - b.index)
         .map(({ width }) => width);
     }
-  }, [childrenWidths, childrenWidthsProp, children.length]);
+  }, [animatedChildrenWidths, animatedChildrenWidthsProp, children.length]);
 
   return (
     <>
@@ -24,7 +24,7 @@ export default ({
         <View
           key={i}
           onLayout={({ nativeEvent }) =>
-            setChildrenWidths((prev) => [
+            setAnimatedChildrenWidths((prev) => [
               ...prev,
               { index: i, width: nativeEvent.layout.width },
             ])

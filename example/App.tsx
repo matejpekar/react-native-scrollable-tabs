@@ -1,8 +1,7 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   useWindowDimensions,
   TouchableWithoutFeedback,
   TouchableWithoutFeedbackProps,
@@ -10,15 +9,24 @@ import {
 import ScrollableTabs, {
   ScrollableTabsMethods,
   ScrollIndicator,
+  useScrollableTabs,
 } from 'react-native-scrollable-tabs';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 export default () => {
   const { width } = useWindowDimensions();
   const ref = useRef<ScrollableTabsMethods>(null);
+  const [haptics, setHaptics] = useState(false);
+
+  const hapticFeedback = () => impactAsync(ImpactFeedbackStyle.Light);
 
   const indexes = useMemo(
     () =>
-      Array(50)
+      Array(15)
         .fill(0)
         .map((_, index) => index + 1),
     []
@@ -31,12 +39,19 @@ export default () => {
         width={width}
         contentContainerStyle={styles.contentContainer}
         scrollIndicator={<ScrollIndicator />}
+        onScrollBeginDrag={() => setHaptics(true)}
+        onMomentumScrollEnd={() => setHaptics(false)}
+        onChange={() => haptics && hapticFeedback()}
+        decelerationRate="fast"
       >
         {indexes.map((item, i) => (
           <Tab
             index={item}
             key={i}
-            onPress={() => ref.current?.snapToIndex(i)}
+            onPress={() => {
+              ref.current?.snapToIndex(i);
+              hapticFeedback();
+            }}
           />
         ))}
       </ScrollableTabs>
@@ -47,32 +62,42 @@ export default () => {
 const Tab = ({
   index,
   ...props
-}: TouchableWithoutFeedbackProps & { index: number }) => (
-  <TouchableWithoutFeedback {...props}>
-    <View style={styles.tab}>
-      {index % 2 ? (
-        <Text>This is as a fi{index}</Text>
-      ) : (
-        <Text>Tab {index}</Text>
-      )}
-    </View>
-  </TouchableWithoutFeedback>
-);
+}: TouchableWithoutFeedbackProps & { index: number }) => {
+  const { animatedIndex } = useScrollableTabs();
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    color: interpolateColor(
+      animatedIndex.value + 1,
+      [index - 0.5, index, index + 0.5],
+      ['gray', 'black', 'gray']
+    ),
+  }));
+
+  return (
+    <TouchableWithoutFeedback {...props}>
+      <View style={[styles.tab]}>
+        {index % 2 ? (
+          <Animated.Text style={animatedStyle}>Tab long {index}</Animated.Text>
+        ) : (
+          <Animated.Text style={animatedStyle}>Tab {index}</Animated.Text>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     marginTop: 100,
     height: 100,
-    backgroundColor: 'red',
   },
   contentContainer: {
-    gap: 100,
-    paddingHorizontal: 40,
+    gap: 20,
+    paddingHorizontal: 20,
   },
   tab: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
+    height: 100,
   },
 });

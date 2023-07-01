@@ -40,4 +40,14 @@ export interface ScrollableTabsVariables {
    * @type SharedValue<number>
    */
   animatedCenterOffset: SharedValue<number>;
+  /**
+   * The widths of individual components inside scrolView.
+   * @type SharedValue<number>
+   */
+  animatedMiddlePoints: SharedValue<number[]>;
+  /**
+   * The widths of individual components inside scrolView.
+   * @type SharedValue<number>
+   */
+  animatedChildrenWidths: SharedValue<number[]>;
 }

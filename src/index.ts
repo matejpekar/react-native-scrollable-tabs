@@ -4,3 +4,5 @@ export { default as ScrollIndicator } from './components/ScrollIndicator';
 export type { ScrollableTabsProps } from './components/ScrollableTabs';
 export type { ScrollIndicatorProps } from './components/ScrollIndicator';
 export type { ScrollableTabsMethods, ScrollableTabsVariables } from './types';
+
+export { useCenterPoints, useScrollableTabs, useSnapPoints } from './hooks';
