@@ -1,6 +1,6 @@
 {
-  "name": "react-native-scrollable-tabs",
-  "version": "0.1.0",
+  "name": "@matejpekar/react-native-scrollable-tabs",
+  "version": "0.2.0",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -27,7 +27,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepack": "bob build",
@@ -48,7 +48,8 @@
   },
   "homepage": "https://github.com/matejpekar/react-native-scrollable-tabs#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
