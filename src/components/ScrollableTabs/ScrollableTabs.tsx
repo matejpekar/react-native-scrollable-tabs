@@ -21,7 +21,7 @@ import { ScrollableTabsProps } from './types';
 import ChildrenWidthMeter from '../ChildrenWidthMeter';
 import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
-export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
+const ScrollableTabs = forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
   (
     {
       width,
@@ -123,23 +123,19 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
       );
     });
 
-    const animatedCenterOffset = useDerivedValue(
-      () =>
-        interpolate(
-          animatedScrollX.value,
-          snapPoints.value,
-          animatedMiddlePoints.value,
-          'clamp'
-        ),
-      []
+    const animatedCenterOffset = useDerivedValue(() =>
+      interpolate(
+        animatedScrollX.value,
+        snapPoints.value,
+        animatedMiddlePoints.value,
+        'clamp'
+      )
     );
     const animatedWidth = useDerivedValue(
-      () => animatedChildrenWidths.value[Math.round(animatedIndex.value)] ?? 0,
-      []
+      () => animatedChildrenWidths.value[Math.round(animatedIndex.value)] ?? 0
     );
     const animatedFocusedWidth = useDerivedValue(
-      () => animatedChildrenWidths.value[animatedFocusedIndex.value] ?? 0,
-      []
+      () => animatedChildrenWidths.value[animatedFocusedIndex.value] ?? 0
     );
 
     const handleSnapToIndex = useCallback(
@@ -218,3 +214,6 @@ export default forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
     );
   }
 );
+
+type ScrollableTabs = ScrollableTabsMethods;
+export default ScrollableTabs;

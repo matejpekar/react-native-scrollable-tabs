@@ -7,7 +7,6 @@ import {
   TouchableWithoutFeedbackProps,
 } from 'react-native';
 import ScrollableTabs, {
-  ScrollableTabsMethods,
   ScrollIndicator,
   useScrollableTabs,
 } from 'react-native-scrollable-tabs';
@@ -19,7 +18,7 @@ import Animated, {
 
 export default () => {
   const { width } = useWindowDimensions();
-  const ref = useRef<ScrollableTabsMethods>(null);
+  const ref = useRef<ScrollableTabs>(null);
   const [haptics, setHaptics] = useState(false);
 
   const hapticFeedback = () => impactAsync(ImpactFeedbackStyle.Light);

@@ -1,5 +1,4 @@
 import React from 'react';
-import type { ScrollableTabsMethods } from '../../types';
 import type { ScrollViewProps } from 'react-native';
 
 export interface ScrollableTabsProps extends Omit<ScrollViewProps, ''> {
@@ -45,12 +44,3 @@ export interface ScrollableTabsProps extends Omit<ScrollViewProps, ''> {
    */
   onFocusChange?: (index: number) => void;
 }
-
-declare type ScrollableTabs = ScrollableTabsMethods;
-declare const ScrollableTabs: React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    ScrollableTabsProps & React.RefAttributes<ScrollableTabsMethods>
-  >
->;
-
-export default ScrollableTabs;
