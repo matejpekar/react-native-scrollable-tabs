@@ -48,8 +48,7 @@
   },
   "homepage": "https://github.com/matejpekar/react-native-scrollable-tabs#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "@matejpekar:registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
