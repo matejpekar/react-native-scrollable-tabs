@@ -9,7 +9,7 @@ import {
 import ScrollableTabs, {
   ScrollIndicator,
   useScrollableTabs,
-} from 'react-native-scrollable-tabs';
+} from '@matejpekar/react-native-scrollable-tabs';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import Animated, {
   interpolateColor,
