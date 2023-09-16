@@ -1,5 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import type { ScrollViewProps } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 
 export interface ScrollableTabsProps extends Omit<ScrollViewProps, ''> {
   /**

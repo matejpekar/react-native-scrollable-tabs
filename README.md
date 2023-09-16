@@ -27,7 +27,7 @@ export default () => {
   const { width } = useWindowDimensions();
 
   return (
-    <ScrollableTabs width={width} scrollIndicator={ScrollIndicator}>
+    <ScrollableTabs width={width} scrollIndicator={<ScrollIndicator />}>
       <Tab />
       // ...
     </ScrollableTabs>

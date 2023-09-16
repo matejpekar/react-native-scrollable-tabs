@@ -108,7 +108,7 @@ const ScrollableTabs = forwardRef<ScrollableTabsMethods, ScrollableTabsProps>(
           animatedFocusIndexProp.value = index;
         }
         if (index !== prev && onFocusChangeProp) {
-          onFocusChangeProp(index);
+          runOnJS(onFocusChangeProp)(index);
         }
       }
     );
